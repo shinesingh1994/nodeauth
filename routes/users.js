@@ -25,6 +25,7 @@ router.get('/login', function(req, res, next) {
   });
 });
 
+
 router.post('/register', uploads.single('profileimg'), function(req, res, next){
 	// Get Form Values
 	var name = req.body.name;
@@ -85,8 +86,9 @@ router.post('/register', uploads.single('profileimg'), function(req, res, next){
 			if(err) throw err;
 			console.log(user);
 		});
-		
-		res.location('/');
+		console.log('Registration Successful');
+		req.flash('success', 'Registration Successful');
+		//res.location('/');
 		res.redirect('/');
 	}
 });
@@ -124,11 +126,16 @@ passport.use(new LocalStrategy(
 	}
 ));
 
-router.post('/login', passport.authenticate('local', {successRedirect:'/', failureFlash:'Invalid Username or Password'}), function(req, res){
-
+router.post('/login', passport.authenticate('local', {failureRedirect: '/users/login', failureFlash:'Invalid Username or Password'}), function(req, res){
 	console.log('Authentication Successful');
 	req.flash('success', 'You are Logged in');
 	res.redirect('/');
+});
+
+router.get('/logout', function(req, res){
+	req.logout();
+	req.flash('success', 'You have logged out');
+	res.redirect('/users/login');
 });
 
 module.exports = router;
